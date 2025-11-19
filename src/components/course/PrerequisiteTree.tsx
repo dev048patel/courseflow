@@ -1,4 +1,5 @@
 import React from 'react';
+import { GitBranch } from 'lucide-react';
 
 interface PrerequisiteTreeProps {
     courseCode: string;
@@ -6,9 +7,11 @@ interface PrerequisiteTreeProps {
 
 export function PrerequisiteTree({ courseCode }: PrerequisiteTreeProps) {
     return (
-        <div className="flex flex-col items-center justify-center h-48 text-slate-400 border-2 border-dashed rounded-lg">
-            <p className="text-sm font-medium">Visual Prerequisite Tree</p>
-            <p className="text-xs mt-1">Graph for {courseCode} loading...</p>
+        <div className="flex flex-col items-center justify-center h-40 text-gray-400 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
+            <GitBranch className="w-8 h-8 mb-2" />
+            <p className="text-sm font-medium text-gray-600">Prerequisite Graph</p>
+            <p className="text-xs mt-1 text-gray-500">For {courseCode}</p>
+            <p className="text-xs mt-2 text-gray-400">Coming Soon</p>
         </div>
     );
 }
