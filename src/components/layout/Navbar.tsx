@@ -42,9 +42,18 @@ export function Navbar() {
                             <Briefcase className="w-5 h-5" />
                             <span className="text-xs font-medium">Jobs</span>
                         </Link>
-                        <Link href="/courses" className="flex flex-col items-center gap-0.5 text-[#0a66c2] group">
+                        <Link href="/courses" className="flex flex-col items-center gap-0.5 text-gray-600 hover:text-gray-900 group">
                             <BookOpen className="w-5 h-5" />
                             <span className="text-xs font-medium">Courses</span>
+                        </Link>
+                        <div className="w-px h-8 bg-gray-200 mx-2"></div>
+                        <Link href="/profile" className="flex flex-col items-center gap-0.5 text-gray-600 hover:text-gray-900 group">
+                            <div className="w-5 h-5 bg-slate-200 rounded-full flex items-center justify-center text-[10px] font-bold text-slate-600 border border-slate-300">
+                                DP
+                            </div>
+                            <span className="text-xs font-medium flex items-center gap-0.5">
+                                Me <span className="text-[8px]">▼</span>
+                            </span>
                         </Link>
                     </div>
                 </div>
