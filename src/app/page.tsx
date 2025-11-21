@@ -113,14 +113,20 @@ export default async function HomePage() {
               <BookOpen className="w-6 h-6 text-[#0a66c2] group-hover:scale-110 transition-transform" />
               <span className="text-xs font-medium text-slate-700">Browse Courses</span>
             </Link>
-            <button className="flex flex-col items-center gap-2 p-3 rounded-lg hover:bg-blue-50 transition-colors group">
+            <Link
+              href="/courses"
+              className="flex flex-col items-center gap-2 p-3 rounded-lg hover:bg-blue-50 transition-colors group"
+            >
               <MessageSquare className="w-6 h-6 text-[#0a66c2] group-hover:scale-110 transition-transform" />
               <span className="text-xs font-medium text-slate-700">Write Review</span>
-            </button>
-            <button className="flex flex-col items-center gap-2 p-3 rounded-lg hover:bg-blue-50 transition-colors group">
+            </Link>
+            <Link
+              href="/my-reviews"
+              className="flex flex-col items-center gap-2 p-3 rounded-lg hover:bg-blue-50 transition-colors group"
+            >
               <ThumbsUp className="w-6 h-6 text-[#0a66c2] group-hover:scale-110 transition-transform" />
               <span className="text-xs font-medium text-slate-700">My Reviews</span>
-            </button>
+            </Link>
           </div>
         </div>
 
