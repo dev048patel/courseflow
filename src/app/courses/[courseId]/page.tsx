@@ -1,92 +1,100 @@
-import { notFound } from 'next/navigation';
-import { CourseHeader } from '@/components/course/CourseHeader';
-import { PrerequisiteTree } from '@/components/course/PrerequisiteTree';
-import { ReviewList } from '@/components/course/ReviewList';
-import { ReviewForm } from '@/components/course/ReviewForm';
-import { SyllabusList } from '@/components/course/SyllabusList';
-import { getCourseDetails } from '@/lib/data';
+'use client';
 
-export default async function CoursePage({ params }: { params: Promise<{ courseId: string }> }) {
-    const { courseId } = await params;
-    const courseData = await getCourseDetails(courseId);
+import { useState, useEffect } from 'react';
+import { createClient } from '@/utils/supabase/client';
+import { CareerRoadmap } from '@/components/roadmap/CareerRoadmap';
+import { OutcomePanel } from '@/components/roadmap/OutcomePanel';
+import { Star, Clock, BookOpen, Users } from 'lucide-react';
+import { useParams } from 'next/navigation';
 
-    if (!courseData) return notFound();
+export default function CoursePage() {
+    const params = useParams();
+    const courseId = params.courseId as string;
+    const [course, setCourse] = useState<any>(null);
+    const [activeNode, setActiveNode] = useState<any>(null);
+    const [unlockedSkills, setUnlockedSkills] = useState<string[]>([]);
+    const [careerImpact, setCareerImpact] = useState(0);
+    const supabase = createClient();
 
-    const { course, reviews, syllabi } = courseData;
+    useEffect(() => {
+        const fetchCourse = async () => {
+            const { data } = await supabase
+                .from('courses')
+                .select('*')
+                .eq('id', courseId)
+                .single();
+
+            if (data) setCourse(data);
+        };
+        fetchCourse();
+    }, [courseId]);
+
+    const handleNodeClick = (node: any, skills: string[]) => {
+        setActiveNode(node);
+        setUnlockedSkills(skills);
+        // Simulate career impact calculation based on node depth or data
+        setCareerImpact(Math.floor(Math.random() * 30) + 60); // Random 60-90%
+    };
+
+    if (!course) return <div className="min-h-screen bg-[#0B0C0E] flex items-center justify-center text-white">Loading...</div>;
 
     return (
-        <main className="min-h-screen bg-[#F3F2EF] py-6">
-            <div className="max-w-7xl mx-auto px-4">
-                {/* Course Header */}
-                <CourseHeader
-                    code={course.code}
-                    name={course.name}
-                    description={course.description}
-                />
+        <main className="min-h-screen bg-[#0B0C0E] pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-                {/* Main Content Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                    {/* Left & Center Column: Reviews (2/3 width) */}
-                    <div className="lg:col-span-2 space-y-4">
-                        {/* Write Review Card */}
-                        <section>
-                            <h2 className="text-xl font-bold mb-3 text-slate-800 px-1">Write a Review</h2>
-                            <ReviewForm courseId={courseId} />
-                        </section>
+                {/* LEFT COLUMN: Course Info (3 cols) */}
+                <div className="lg:col-span-3 space-y-6">
+                    <div className="glass-panel p-6 rounded-xl border border-white/10">
+                        <div className="w-12 h-12 rounded-lg bg-blue-600/20 flex items-center justify-center mb-4 text-blue-400 font-bold">
+                            {course.code.split(' ')[0]}
+                        </div>
+                        <h1 className="text-2xl font-bold text-white mb-2">{course.code}</h1>
+                        <h2 className="text-lg text-gray-300 mb-4">{course.name}</h2>
 
-                        {/* Reviews List Card */}
-                        <section>
-                            <h2 className="text-xl font-bold mb-3 text-slate-800 px-1">
-                                Student Reviews ({reviews.length})
-                            </h2>
-                            {reviews.length > 0 ? (
-                                <ReviewList reviews={reviews} />
-                            ) : (
-                                <div className="bg-white border border-gray-300 rounded-lg shadow-sm p-8 text-center">
-                                    <p className="text-slate-500">No reviews yet. Be the first to review!</p>
-                                </div>
-                            )}
-                        </section>
-                    </div>
-
-                    {/* Right Sidebar: Tools & Resources (1/3 width) */}
-                    <div className="space-y-4">
-                        {/* Prerequisite Tree Card */}
-                        <section className="bg-white border border-gray-300 rounded-lg shadow-sm p-4">
-                            <h3 className="font-semibold mb-3 text-slate-800 text-sm">Prerequisite Path</h3>
-                            <PrerequisiteTree courseCode={course.code} />
-                        </section>
-
-                        {/* Syllabus Vault Card */}
-                        <section className="bg-white border border-gray-300 rounded-lg shadow-sm p-4">
-                            <h3 className="font-semibold text-slate-800 mb-3 text-sm">Syllabus Vault</h3>
-                            <SyllabusList syllabi={syllabi} courseId={courseId} />
-                        </section>
-
-                        {/* Quick Stats Card */}
-                        <section className="bg-white border border-gray-300 rounded-lg shadow-sm p-4">
-                            <h3 className="font-semibold text-slate-800 mb-3 text-sm">Course Stats</h3>
-                            <div className="space-y-2">
-                                <div className="flex justify-between text-sm">
-                                    <span className="text-gray-600">Total Reviews</span>
-                                    <span className="font-semibold text-slate-800">{reviews.length}</span>
-                                </div>
-                                <div className="flex justify-between text-sm">
-                                    <span className="text-gray-600">Average Rating</span>
-                                    <span className="font-semibold text-slate-800">
-                                        {reviews.length > 0
-                                            ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1)
-                                            : 'N/A'}
-                                    </span>
-                                </div>
-                                <div className="flex justify-between text-sm">
-                                    <span className="text-gray-600">Syllabi Available</span>
-                                    <span className="font-semibold text-slate-800">{syllabi.length}</span>
-                                </div>
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-2 text-sm text-gray-400">
+                                <Star className="w-4 h-4 text-yellow-500" />
+                                <span>4.8/5.0 Rating</span>
                             </div>
-                        </section>
+                            <div className="flex items-center gap-2 text-sm text-gray-400">
+                                <Clock className="w-4 h-4 text-blue-400" />
+                                <span>3 Credit Hours</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm text-gray-400">
+                                <Users className="w-4 h-4 text-purple-400" />
+                                <span>250+ Students Enrolled</span>
+                            </div>
+                        </div>
+
+                        <p className="mt-6 text-sm text-gray-400 leading-relaxed">
+                            {course.description || "An intensive exploration of fundamental concepts, designed to prepare students for advanced topics in the field."}
+                        </p>
+
+                        <button className="btn-primary w-full mt-6">
+                            Write a Review
+                        </button>
                     </div>
                 </div>
+
+                {/* CENTER COLUMN: Career Roadmap (6 cols) */}
+                <div className="lg:col-span-6">
+                    <div className="glass-panel p-1 rounded-xl border border-white/10 h-full min-h-[600px]">
+                        <CareerRoadmap
+                            courseId={courseId}
+                            onNodeClick={handleNodeClick}
+                        />
+                    </div>
+                </div>
+
+                {/* RIGHT COLUMN: Outcome Panel (3 cols) */}
+                <div className="lg:col-span-3">
+                    <OutcomePanel
+                        activeNode={activeNode}
+                        unlockedSkills={unlockedSkills}
+                        careerImpact={careerImpact}
+                    />
+                </div>
+
             </div>
         </main>
     );

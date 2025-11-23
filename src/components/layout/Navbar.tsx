@@ -1,60 +1,101 @@
 'use client';
 
 import Link from 'next/link';
-import { Home, Users, BookOpen, Search, Briefcase } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { createClient } from '@/utils/supabase/client';
+import { User } from '@supabase/supabase-js';
+import { useRouter } from 'next/navigation';
+import { LogOut, User as UserIcon, Search } from 'lucide-react';
 
 export function Navbar() {
+    const [user, setUser] = useState<User | null>(null);
+    const supabase = createClient();
+    const router = useRouter();
+
+    useEffect(() => {
+        const getUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            setUser(user);
+        };
+        getUser();
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user ?? null);
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
+
+    const handleSignOut = async () => {
+        await supabase.auth.signOut();
+        router.push('/login');
+        router.refresh();
+    };
+
     return (
-        <nav className="fixed top-0 w-full z-50 bg-white border-b border-gray-200 shadow-sm">
-            <div className="max-w-7xl mx-auto px-4">
-                <div className="flex items-center justify-between h-14">
+        <nav className="fixed top-0 w-full z-50 glass-panel border-b border-white/10">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex justify-between h-16 items-center">
                     {/* Logo */}
-                    <div className="flex items-center gap-2">
-                        <div className="w-9 h-9 bg-[#0a66c2] rounded flex items-center justify-center text-white font-bold text-lg">
-                            CF
+                    <div className="flex-shrink-0 flex items-center gap-8">
+                        <Link href="/" className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
+                                <span className="text-white font-bold text-sm">CF</span>
+                            </div>
+                            CourseFlow
+                        </Link>
+
+                        {/* Desktop Navigation */}
+                        <div className="hidden md:flex items-center gap-6">
+                            <Link href="/courses" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">
+                                Explore
+                            </Link>
+                            <Link href="/network" className="text-sm font-medium text-gray-400 hover:text-white transition-colors">
+                                Network
+                            </Link>
                         </div>
-                        <span className="hidden md:block font-semibold text-gray-800">CourseFlow</span>
                     </div>
 
                     {/* Search Bar */}
-                    <div className="flex-1 max-w-md mx-4">
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <div className="hidden md:flex flex-1 max-w-md mx-8">
+                        <div className="relative w-full">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                             <input
                                 type="text"
                                 placeholder="Search courses, professors..."
-                                className="w-full pl-10 pr-4 py-1.5 bg-[#EEF3F8] rounded-md text-sm focus:outline-none focus:bg-white focus:ring-1 focus:ring-[#0a66c2] transition-all"
+                                className="input-primary pl-10 py-2 text-sm"
                             />
                         </div>
                     </div>
 
-                    {/* Navigation Links */}
-                    <div className="flex items-center gap-6">
-                        <Link href="/" className="flex flex-col items-center gap-0.5 text-gray-600 hover:text-gray-900 group">
-                            <Home className="w-5 h-5" />
-                            <span className="text-xs font-medium">Home</span>
-                        </Link>
-                        <Link href="/network" className="flex flex-col items-center gap-0.5 text-gray-600 hover:text-gray-900 group">
-                            <Users className="w-5 h-5" />
-                            <span className="text-xs font-medium">Network</span>
-                        </Link>
-                        <Link href="/jobs" className="flex flex-col items-center gap-0.5 text-gray-600 hover:text-gray-900 group">
-                            <Briefcase className="w-5 h-5" />
-                            <span className="text-xs font-medium">Jobs</span>
-                        </Link>
-                        <Link href="/courses" className="flex flex-col items-center gap-0.5 text-gray-600 hover:text-gray-900 group">
-                            <BookOpen className="w-5 h-5" />
-                            <span className="text-xs font-medium">Courses</span>
-                        </Link>
-                        <div className="w-px h-8 bg-gray-200 mx-2"></div>
-                        <Link href="/profile" className="flex flex-col items-center gap-0.5 text-gray-600 hover:text-gray-900 group">
-                            <div className="w-5 h-5 bg-slate-200 rounded-full flex items-center justify-center text-[10px] font-bold text-slate-600 border border-slate-300">
-                                DP
-                            </div>
-                            <span className="text-xs font-medium flex items-center gap-0.5">
-                                Me <span className="text-[8px]">▼</span>
-                            </span>
-                        </Link>
+                    {/* Right Side Actions */}
+                    <div className="flex items-center gap-4">
+                        {user ? (
+                            <>
+                                <Link
+                                    href="/profile"
+                                    className="text-sm font-medium text-gray-300 hover:text-white transition-colors flex items-center gap-2"
+                                >
+                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center border border-white/10">
+                                        <UserIcon className="w-4 h-4 text-white" />
+                                    </div>
+                                </Link>
+                                <button
+                                    onClick={handleSignOut}
+                                    className="btn-primary text-xs py-2 px-4 !rounded-full flex items-center gap-2"
+                                >
+                                    <LogOut className="w-3 h-3" />
+                                    Sign Out
+                                </button>
+                            </>
+                        ) : (
+                            <Link
+                                href="/login"
+                                className="btn-primary text-sm py-2 px-6 !rounded-full"
+                            >
+                                Sign In
+                            </Link>
+                        )}
                     </div>
                 </div>
             </div>

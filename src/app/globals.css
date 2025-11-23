@@ -1,12 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #F3F2EF;
-  --foreground: #000000;
-  --linkedin-blue: #0a66c2;
-  --linkedin-blue-hover: #004182;
-  --card-bg: #ffffff;
-  --border-color: #e5e5e5;
+  --background: #0B0C0E;
+  --foreground: #EEEEEE;
+  --card-bg: #15171B;
+  --input-bg: #1A1C23;
+  --input-border: #2E3038;
+  --primary-gradient-start: #3C3F4A;
+  --primary-gradient-end: #2A2C33;
 }
 
 @theme inline {
@@ -17,25 +18,96 @@
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
   line-height: 1.6;
+  min-height: 100vh;
 }
 
-/* LinkedIn-style scrollbar */
+/* Global Input Style - STRICT ENFORCEMENT */
+.input-primary {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  /* Glassy Dark */
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #FFFFFF !important;
+  /* FORCE WHITE TEXT */
+  caret-color: #0a66c2 !important;
+  /* Blue Cursor */
+  outline: none;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  transition: all 0.2s ease;
+}
+
+.input-primary:focus {
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Ensure the placeholder is distinct but visible */
+.input-primary::placeholder {
+  color: #9ca3af !important;
+  /* Light Gray */
+  opacity: 1;
+}
+
+/* Remove default browser autofill white background */
+.input-primary:-webkit-autofill,
+.input-primary:-webkit-autofill:hover,
+.input-primary:-webkit-autofill:focus {
+  -webkit-text-fill-color: #FFFFFF !important;
+  -webkit-box-shadow: 0 0 0px 1000px #1A1C23 inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Global Button Style */
+.btn-primary {
+  background: linear-gradient(180deg, var(--primary-gradient-start) 0%, var(--primary-gradient-end) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.4);
+  color: white;
+  font-family: sans-serif;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(180deg, #4C4F5A 0%, #3A3C43 100%);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Glassmorphism Utilities */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--background);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 4px;
+  background: #333;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -44,7 +116,7 @@ body {
 
 /* Smooth transitions */
 * {
-  transition-property: background-color, border-color, color, fill, stroke;
-  transition-duration: 150ms;
+  transition-property: background-color, border-color, color, fill, stroke, opacity, transform;
+  transition-duration: 200ms;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }

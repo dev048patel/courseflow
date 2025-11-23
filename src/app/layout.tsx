@@ -24,9 +24,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#F3F2EF]`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#050507] text-white selection:bg-blue-500/30`}
       >
         <Navbar />
         <div className="pt-14">

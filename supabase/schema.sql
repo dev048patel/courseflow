@@ -62,6 +62,11 @@ CREATE TABLE reviews (
     -- We link to Enrollment, not User directly, to enforce "Must have taken class"
     linked_enrollment_id UUID REFERENCES enrollments(id) ON DELETE SET NULL,
     
+    -- Career Simulation Data
+    mentorship_score JSONB DEFAULT '{}'::jsonb, -- { is_accessible: boolean, is_career_mentor: boolean, inspires_interest: boolean }
+    skills_learned TEXT[] DEFAULT '{}', -- ["Python", "Public Speaking"]
+    career_relevance_rating INTEGER CHECK (career_relevance_rating >= 1 AND career_relevance_rating <= 5),
+
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
